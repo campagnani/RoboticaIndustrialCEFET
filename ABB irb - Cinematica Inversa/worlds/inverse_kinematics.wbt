@@ -1,0 +1,126 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  basicTimeStep 16
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  fieldOfView 0.85
+  orientation -0.3137915782368608 0.9355329561467193 0.16221261785385432 1.0096224619451717
+  position 5.291121107814978 2.7919841943842134 2.843376052880351
+  follow "robot:IRB 4600/40:solid:solid:solid:solid:solid:solid:pen"
+  followType "Pan and Tilt Shot"
+}
+TexturedBackground {
+  texture "empty_office"
+}
+PointLight {
+  attenuation 0 0 1
+  intensity 10
+  location -4 6 5
+  castShadows TRUE
+}
+PointLight {
+  attenuation 0 0 1
+  intensity 10
+  location 5 6 5
+}
+Irb4600-40 {
+  rotation 1 0 0 4.712388966
+  supervisor TRUE
+  handSlot [
+    Pen {
+      translation 0 0 0.02
+      rotation 1 0 0 -1.5708
+      children [
+        Transform {
+          translation 0 0.05 0
+          children [
+            Shape {
+              appearance BrushedAluminium {
+                colorOverride 0 0.4131074998092622 0.9919279774166476
+              }
+              geometry Cylinder {
+                height 0.05
+                radius 0.04
+                subdivision 24
+              }
+            }
+          ]
+        }
+        Transform {
+          translation 0 0.04 0
+          children [
+            Shape {
+              appearance BrushedAluminium {
+                colorOverride 0 0 0
+              }
+              geometry Cylinder {
+                height 0.07
+                radius 0.01
+                subdivision 12
+              }
+            }
+          ]
+        }
+      ]
+      leadSize 0.01
+      maxDistance 0.05
+    }
+  ]
+  staticBase TRUE
+}
+DEF TARGET Solid {
+  translation 2 1 0.5
+  scale 0.4 0.4 0.4
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "textures/target.png"
+          ]
+        }
+        roughnessMap ImageTexture {
+          url [
+            "textures/target.png"
+          ]
+        }
+        metalnessMap ImageTexture {
+          url [
+            "textures/target.png"
+          ]
+        }
+        emissiveColorMap ImageTexture {
+          url [
+            "textures/target.png"
+          ]
+        }
+        textureTransform TextureTransform {
+          scale 2 1
+        }
+      }
+      geometry Sphere {
+        radius 0.1
+        subdivision 2
+      }
+    }
+  ]
+}
+Floor {
+  translation 0 7 4.22
+  rotation 0 0 1 3.1415926
+  size 20 16.4
+  tileSize 1 1
+  appearance PBRAppearance {
+    baseColorMap ImageTexture {
+      url [
+        "textures/asphalt.jpg"
+      ]
+    }
+    roughness 1
+    metalness 0
+  }
+}
+RectangleArena {
+  floorSize 10 10
+}
