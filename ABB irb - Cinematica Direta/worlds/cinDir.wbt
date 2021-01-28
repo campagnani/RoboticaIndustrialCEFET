@@ -1,0 +1,31 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.2013620013015759 0.9639985250663983 0.1736668883282965 1.2170710773345523
+  position 7.331648142226842 2.874793380951998 2.665769734765131
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 5 5
+}
+Irb4600-40 {
+  rotation 1 0 0 -1.5707953071795862
+  controller "cineDir"
+  supervisor TRUE
+  handSlot [
+    Robotiq3fGripper {
+      translation 0 0 0
+      rotation 1 0 0 1.5708
+    }
+  ]
+  staticBase TRUE
+}
+WoodenBox {
+  translation 1 0.05 1
+  size 0.1 0.1 0.1
+}
