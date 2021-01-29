@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Copyright 1996-2021 Cyberbotics Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,92 +15,76 @@
 # limitations under the License.
 
 """Demonstration of inverse kinematics using the "ikpy" Python module."""
-print("\x1b[2J\x1b[1;1H")
-import threading
+
 import tkinter as tk
-import sys
 import tempfile
-import os
-
-try:
-    import ikpy
-    from ikpy.chain import Chain
-except ImportError:
-    sys.exit('The "ikpy" Python module is not installed. '
-             'To run this sample, please upgrade "pip" and install ikpy with this command: "pip install ikpy"')
-
-import math
+from ikpy.chain import Chain
 from controller import Supervisor
 
-if ikpy.__version__[0] < '3':
-    sys.exit('The "ikpy" Python module version is too old. '
-             'Please upgrade "ikpy" Python module to version "3.0" or newer with this command: "pip install --upgrade ikpy"')
+print("\x1b[2J\x1b[1;1H")
 
 
-IKPY_MAX_ITERATIONS = 4
-
-# Initialize the Webots Supervisor.
-supervisor = Supervisor()
-timeStep = int(4 * supervisor.getBasicTimeStep())
-
-# Create the arm chain from the URDF
-filename = None
-with tempfile.NamedTemporaryFile(suffix='.urdf', delete=False) as file:
-    filename = file.name
-    file.write(supervisor.getUrdf().encode('utf-8'))
-armChain = Chain.from_urdf_file(filename)
-for i in [0, 6]:
-    armChain.active_links_mask[0] = False
-
-# Initialize the arm motors and encoders.
-motors = []
-for link in armChain.links:
-    if 'motor' in link.name:
-        motor = supervisor.getDevice(link.name)
-        motor.setVelocity(1.0)
-        position_sensor = motor.getPositionSensor()
-        position_sensor.enable(timeStep)
-        motors.append(motor)
-
-# Get the arm and target nodes.
-arm = supervisor.getSelf()
-posiçãoAngular = [0,0,0,0,0,0]
-
-#interface Grafica
-def interfaceGrafica():
-    root = tk.Tk()
-    root.title('Controlar juntas do robô e garra com sliders')
-    root.geometry("800x600")
-    
-    def update():
-        for i in range(0,6):
-            posiçãoAngular[i] = slide[i].get()
-        garra = slide[6].get()
-    
-    slide = [0,0,0,0,0,0,0]
-    
-    for i in range(0,7):
-        slide[i] = tk.Scale(root, from_=-180, to=180, length=800, orient=tk.HORIZONTAL)#,command = update)
-        slide[i].pack()
-    
-    go = tk.Button(root, text="Move!", command = update).pack()
-    
-    root.mainloop()
-
-
-class ThreadDoThalles(threading.Thread):
+class Robot:
     def __init__(self):
-         super(ThreadDoThalles, self).__init__()
+        self.supervisor = Supervisor()
+        self.timeStep = int(4 * self.supervisor.getBasicTimeStep())
+        # Create the arm chain from the URDF
+        with tempfile.NamedTemporaryFile(suffix='.urdf', delete=False) as file:
+            filename = file.name
+            file.write(self.supervisor.getUrdf().encode('utf-8'))
+        armChain = Chain.from_urdf_file(filename)
+        armChain.active_links_mask[0] = False
+        # Initialize the arm motors and encoders.
+        self.motors = []
+        for link in armChain.links:
+            if 'motor' in link.name:
+                motor = self.supervisor.getDevice(link.name)
+                motor.setVelocity(1.0)
+                position_sensor = motor.getPositionSensor()
+                position_sensor.enable(self.timeStep)
+                self.motors.append(motor)
+        self.arm = self.supervisor.getSelf()
+        self.positions = [0 for _ in self.motors]
+
+    def update(self):
+        for motor, position in zip(self.motors, self.positions):
+            motor.setPosition(position*0.01745277777)
+
+    def simulate(self):
+        self.supervisor.step(self.timeStep)
+
+
+class Window:
+    def __init__(self, robot):
+        self.robot = robot
+        self.root = tk.Tk()
+        self.root.title('Posição das Juntas')
+        self.root.geometry("1200x300")
+        options = {
+            'from_': -180,
+            'to': 180,
+            'length': 1200,
+            'orient': tk.HORIZONTAL,
+            'command': self.update_robot_positions
+        }
+        self.sliders = [tk.Scale(self.root, **options) for _ in range(0, 7)]
+        [slider.pack() for slider in self.sliders]
+
+    def get_sliders(self):
+        return [slider.get() for slider in self.sliders]
+
+    def update_robot_positions(self, _=None):
+        *self.robot.positions, _ = self.get_sliders()
+        self.robot.update()
 
     def run(self):
-        interfaceGrafica()
+        def __run_always():
+            self.robot.simulate()
+            self.root.after(1, __run_always)
+        __run_always()
+        self.root.mainloop()
 
-thread1 = ThreadDoThalles()
-thread1.start()
 
-    
-while supervisor.step(timeStep) != -1:
-    for i in range(len(motors)):
-        motors[i].setPosition(posiçãoAngular[i]*0.01745277777)
-    pass
-    
+robot = Robot()
+window = Window(robot)
+window.run()
