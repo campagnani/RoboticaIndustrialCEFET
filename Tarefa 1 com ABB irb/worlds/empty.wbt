@@ -1,0 +1,31 @@
+#VRML_SIM R2021b utf8
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.35173159758807987 0.8996330590007082 0.2587377869797243 1.2163816696943677
+  position 6.59652481452542 4.0647692778548254 2.779548414349888
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 5 5
+}
+Irb4600-40 {
+  rotation 1 0 0 -1.5707953071795862
+  controller "pega_cubo"
+  supervisor TRUE
+  handSlot [
+    Robotiq3fGripper {
+      translation 0 0 0
+      rotation 1 0 0 1.5708
+    }
+  ]
+  staticBase TRUE
+}
+WoodenBox {
+  translation 1 0.05 1
+  size 0.1 0.1 0.1
+}
