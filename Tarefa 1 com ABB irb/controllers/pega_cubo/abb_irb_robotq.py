@@ -8,7 +8,7 @@ motors = []
 fingers = []
 for index in range(0, supervisor.getNumberOfDevices()):
     device = supervisor.getDeviceByIndex(index)
-    print(device.getName())
+    #print(device.getName())
     name = device.getName()
     if 'sensor' in name:
         continue
@@ -23,30 +23,30 @@ for index in range(0, supervisor.getNumberOfDevices()):
         position_sensor.enable(timeStep)
         fingers.append(device)
 
-print(f'motors  ({len(motors )}): {[motor.getName()  for motor  in motors]}')
-print(f'fingers ({len(fingers)}): {[finger.getName() for finger in fingers]}')
+#print(f'motors  ({len(motors )}): {[motor.getName()  for motor  in motors]}')
+#print(f'fingers ({len(fingers)}): {[finger.getName() for finger in fingers]}')
 
-
+rad = 0.01745329251
 def moveTo(positions):
     for motor, position in zip(motors, positions):
-        motor.setPosition(position * 0.01745277777)
+        motor.setPosition(position * rad)
 
 
 def garra(positions):
-    #positions = [
-        #sorted([positions[0],   3, 70])[0],
-        #sorted([positions[1],   0, 90])[1],
-        #sorted([positions[2], -70, -3])[2],
-    #]
+    positions = [
+        sorted([positions[0],   3, 69])[1],
+        sorted([positions[1],   0, 90])[1],
+        sorted([positions[2],   3, 69])[1]
+    ]
+    
+    fingers[1].setPosition (positions[0] *  rad)
+    fingers[2].setPosition (positions[1] *  rad)
+    fingers[3].setPosition (positions[2] * -rad)
 
-    fingers[1].setPosition(positions[0] * 0.01745277777)
-    fingers[2].setPosition(positions[1] * 0.01745277777)
-    fingers[3].setPosition(positions[2] * 0.01745277777)
+    fingers[5].setPosition (positions[0] *  rad)
+    fingers[6].setPosition (positions[1] *  rad)
+    fingers[7].setPosition (positions[2] * -rad)
 
-    fingers[5].setPosition(positions[0] * 0.01745277777)
-    fingers[6].setPosition(positions[1] * 0.01745277777)
-    fingers[7].setPosition(positions[2] * 0.01745277777)
-
-    fingers[8].setPosition(positions[0] * 0.01745277777)
-    fingers[9].setPosition(positions[1] * 0.01745277777)
-    fingers[10].setPosition(positions[2] * 0.01745277777)
+    fingers[8].setPosition (positions[0] *  rad)
+    fingers[9].setPosition (positions[1] *  rad)
+    fingers[10].setPosition(positions[2] * -rad)
